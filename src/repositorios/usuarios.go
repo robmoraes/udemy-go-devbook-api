@@ -94,6 +94,26 @@ func (repo Usuarios) BuscarPorID(ID uint64) (modelos.Usuario, error) {
 	return usuario, nil
 }
 
+func (repo Usuarios) Atualizar(ID uint64, usuario modelos.Usuario) error {
+	query := fmt.Sprint(
+		"update usuarios set ",
+		"nome=?, ",
+		"nick=?, ",
+		"email=? ",
+		"where id = ?",
+	)
+	stmt, erro := repo.db.Prepare(query)
+	if erro != nil {
+		return erro
+	}
+	defer stmt.Close()
+	if _, erro = stmt.Exec(usuario.Nome, usuario.Nick, usuario.Email, ID); erro != nil {
+		return erro
+	}
+
+	return nil
+}
+
 func insertSt() string {
 	return `
 		INSERT INTO usuarios (
