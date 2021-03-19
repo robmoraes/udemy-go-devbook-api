@@ -42,7 +42,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	usuarioDB.Senha = ""
-	token, _ := autenticacao.CriarToken(usuarioDB.ID)
+	token, erro := autenticacao.CriarToken(usuarioDB.ID)
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
 	respostas.JSON(w, http.StatusOK, struct {
 		User  modelos.Usuario `json:"user"`
 		Token string          `json:"token"`
