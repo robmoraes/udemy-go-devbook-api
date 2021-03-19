@@ -18,7 +18,14 @@ func NovoRepositorioDeUsuarios(db *sql.DB) *Usuarios {
 
 // Criar insere um usuário no banco de dados
 func (repo Usuarios) Criar(usuario modelos.Usuario) (uint64, error) {
-	stmt, erro := repo.db.Prepare(insertSt())
+	stmt, erro := repo.db.Prepare(`
+		INSERT INTO usuarios (
+			nome
+			, nick
+			, email
+			, senha
+		) VALUES (?, ?, ?, ?)
+	`)
 	if erro != nil {
 		return 0, erro
 	}
@@ -71,6 +78,7 @@ func (repositorio Usuarios) Buscar(nomeOuNick string) ([]modelos.Usuario, error)
 	return usuarios, nil
 }
 
+// BuscarPorID buca um usuário específico do banco de dados
 func (repo Usuarios) BuscarPorID(ID uint64) (modelos.Usuario, error) {
 	linhas, erro := repo.db.Query("select id, nome, nick, email, criadoEm from usuarios where id = ?", ID)
 	if erro != nil {
@@ -94,6 +102,7 @@ func (repo Usuarios) BuscarPorID(ID uint64) (modelos.Usuario, error) {
 	return usuario, nil
 }
 
+// Atualizar atualiza um usuário no banco de dados
 func (repo Usuarios) Atualizar(ID uint64, usuario modelos.Usuario) error {
 	query := fmt.Sprint(
 		"update usuarios set ",
@@ -114,13 +123,17 @@ func (repo Usuarios) Atualizar(ID uint64, usuario modelos.Usuario) error {
 	return nil
 }
 
-func insertSt() string {
-	return `
-		INSERT INTO usuarios (
-			nome
-			, nick
-			, email
-			, senha
-		) VALUES (?, ?, ?, ?)
-	`
+// Deletar deleta um usuário do banco de dados
+func (repo Usuarios) Deletar(ID uint64) error {
+	stmt, erro := repo.db.Prepare(
+		"DELETE FROM usuarios WHERE id = ?",
+	)
+	if erro != nil {
+		return erro
+	}
+	defer stmt.Close()
+	if _, erro = stmt.Exec(ID); erro != nil {
+		return erro
+	}
+	return nil
 }
