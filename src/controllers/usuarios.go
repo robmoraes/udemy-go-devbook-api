@@ -28,8 +28,11 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if erro = usuario.Preparar("cadastro"); erro != nil {
-		respostas.Erro(w, http.StatusBadRequest, erro)
+	// if erro = usuario.Preparar("cadastro"); erro != nil {
+	// 	respostas.Erro(w, http.StatusBadRequest, erro)
+	// 	return
+	// }
+	if preparado := usuario.Preparar2(w, "cadastro"); !preparado {
 		return
 	}
 
@@ -115,8 +118,11 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if erro = usuario.Preparar("edicao"); erro != nil {
-		respostas.Erro(w, http.StatusBadRequest, erro)
+	// if erro = usuario.Preparar("edicao"); erro != nil {
+	// 	respostas.Erro(w, http.StatusBadRequest, erro)
+	// 	return
+	// }
+	if preparado := usuario.Preparar2(w, "edicao"); !preparado {
 		return
 	}
 
