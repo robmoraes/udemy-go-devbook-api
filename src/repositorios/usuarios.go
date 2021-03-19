@@ -84,6 +84,7 @@ func (repo Usuarios) BuscarPorID(ID uint64) (modelos.Usuario, error) {
 	if erro != nil {
 		return modelos.Usuario{}, erro
 	}
+	defer linhas.Close()
 
 	var usuario modelos.Usuario
 
@@ -136,4 +137,34 @@ func (repo Usuarios) Deletar(ID uint64) error {
 		return erro
 	}
 	return nil
+}
+
+// BuscarPorEmail busca um usuário filtrando pelo email
+func (repo Usuarios) BuscarPorEmail(email string) (modelos.Usuario, error) {
+	linhas, erro := repo.db.Query(`
+		select id, nome, nick, email, senha, criadoEm
+		from usuarios
+		where email = ?
+	`, email)
+	if erro != nil {
+		return modelos.Usuario{}, erro
+	}
+	defer linhas.Close()
+
+	var usuario modelos.Usuario
+
+	if linhas.Next() {
+		if erro = linhas.Scan(
+			&usuario.ID,
+			&usuario.Nome,
+			&usuario.Nick,
+			&usuario.Email,
+			&usuario.Senha,
+			&usuario.CriadoEm,
+		); erro != nil {
+			return modelos.Usuario{}, erro
+		}
+	}
+
+	return usuario, nil
 }
