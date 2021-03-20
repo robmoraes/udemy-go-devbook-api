@@ -3,14 +3,13 @@ package middlewares
 import (
 	"api/src/autenticacao"
 	"api/src/respostas"
-	"log"
 	"net/http"
 )
 
 // Logger coloca todas as rotas dentro do router
 func Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("\n %s %s %s", r.Method, r.RequestURI, r.Host)
+		// log.Printf("\n %s %s %s", r.Method, r.RequestURI, r.Host)
 		next(w, r)
 	}
 }
